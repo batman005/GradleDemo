@@ -3,6 +3,8 @@ package org.example;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
 
@@ -13,6 +15,8 @@ public class Main {
 
         String url = "https://example.com";
         dealingwithOkHttp(url);
+
+        dealingWithRetrofit("https://jsonplaceholder.typicode.com/");
     }
 
     public static void dealingwithOkHttp(String url){
@@ -41,8 +45,21 @@ public class Main {
     }
 
 
+    public static void dealingWithRetrofit(String url) {
+        try {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-    public static void dealingWithRetrofit(String url){
+            TodoService todoService = retrofit.create(TodoService.class);
 
+            Todo t = todoService.getTodoById("5").execute().body();
+            System.out.println("------------------------Retrofit Response-------------------------");
+            System.out.println("Todo Object downloaded is " + t.toString());
+            System.out.println("----------------------------------------------------------------");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
