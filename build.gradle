@@ -11,16 +11,32 @@ repositories {
 
 dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.10.0'
+    implementation("com.squareup.retrofit2:converter-gson:2.10.0")
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+/* this is a fat jar now*/
 jar {
+    /**
+     * StackOverflow Ref Link : https://stackoverflow.com/questions/67265308/gradle-entry-classpath-is-a-duplicate-but-no-duplicate-handling-strategy-has-b
+     */
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
         attributes (
             'Main-Class': 'org.example.Main'
         )
     }
+    /**
+     *
+     // Include dependencies in the JAR
+     * Added configuration => compileClasspath : It points out to the list of dependencies that the JDK requires to compile the code
+     * StackOverflow Ref Links
+     * Ref Link 1: https://stackoverflow.com/questions/9749032/create-a-groovy-executable-jar-with-gradle
+     * Ref Link 2: https://stackoverflow.com/questions/69044250/build-gradle-error-could-not-get-unknown-property-compile
+     */
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
 test {
